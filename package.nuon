@@ -1,0 +1,7 @@
+{
+    name: "nu-pomodoro"
+    version: 0.1.0
+    description: "A pomodoro management tool for Nushell."
+    license: "https://github.com/amtoine/nu-pomodoro/blob/main/LICENSE"
+    documentation: "https://github.com/amtoine/nu-pomodoro/blob/main/README.md"
+}
