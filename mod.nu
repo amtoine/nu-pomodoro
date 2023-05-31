@@ -29,8 +29,14 @@ export module pomodoro {
         --length: duration
         --long: bool
     ] {
+        let length = if $length == null {
+            if $long { 15min } else { 5min }
+        } else {
+            $length
+        }
+
         chrono {
-            length: (if $length == null {if $long { 15min } else { 5min }} else { $length })
+            length: $length
             title: (if $long { "Long break" } else { "Little break" })
             text: "Time to go back to work"
         }
