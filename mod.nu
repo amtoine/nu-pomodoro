@@ -1,8 +1,14 @@
-export-env {
-    reset
-}
-
 export module pomodoro {
+    def check-pomodoro [] {
+        not ($env.nu-pomodoro? | is-empty)
+    }
+
+    def no-pomodoro-error [] {
+        error make --unspanned {
+            msg: $"no (ansi default_italic)pomodoro(ansi reset) started, please run ('pomodoro start' | nu-highlight)."
+        }
+    }
+
     def chrono [
         pomodoro: record<
             length: duration
@@ -15,6 +21,10 @@ export module pomodoro {
     export def-env work [
         --length: duration = 25min
     ] {
+        if not (check-pomodoro) {
+            no-pomodoro-error
+        }
+
         chrono {
             length: $length
             title: "Pomodoro"
@@ -29,6 +39,10 @@ export module pomodoro {
         --length: duration
         --long: bool
     ] {
+        if not (check-pomodoro) {
+            no-pomodoro-error
+        }
+
         let length = if $length == null {
             if $long { 15min } else { 5min }
         } else {
@@ -46,14 +60,27 @@ export module pomodoro {
     }
 
     export def status [] {
+        if not (check-pomodoro) {
+            no-pomodoro-error
+        }
+
         print $env.nu-pomodoro
     }
 
-    export def-env reset [] {
-        $env.nu-pomodoro = {
-            pomodoros: 0
-            breaks: 0
-            total-time: 0min
+    export def-env start [
+        --force: bool
+    ] {
+        if (not (check-pomodoro)) or $force {
+            $env.nu-pomodoro = {
+                pomodoros: 0
+                breaks: 0
+                total-time: 0min
+            }
+            return
+        }
+
+        error make --unspanned {
+            msg: $"a (ansi default_italic)pomodoro(ansi reset) has already started, please use the ('--force' | nu-highlight) option."
         }
     }
 }
